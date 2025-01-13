@@ -13,9 +13,6 @@ df = df.dropna()
 df["combined"] = (
         "Title: " + df.Summary.str.strip() + "; Content: " + df.Text.str.strip()
 )
-df.head(2)
-
-df["combined"]
 
 # 模型类型
 # 建议使用官方推荐的第二代嵌入模型：text-embedding-ada-002
@@ -43,8 +40,6 @@ df["n_tokens"] = df.combined.apply(lambda x: len(encoding.encode(x)))
 # 我们使用.tail方法获取token数量在允许范围内的最后top_n（1000）条评论。
 df = df[df.n_tokens <= max_tokens].tail(top_n)
 
-# 打印出剩余评论的数量。
-len(df)
 
 from openai import OpenAI
 
