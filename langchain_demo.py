@@ -1,13 +1,29 @@
-from langchain.llms import Deepseek
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
+from langchain_deepseek.chat_models import ChatDeepSeek
+# 聊天场景的提示次模版
+from langchain_core.prompts import ChatPromptTemplate
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # 配置Deepseek模型
-llm = Deepseek(api_key="sk-09411ecfe7f940cfaf6bddc87b9fa00a", model="DeepSeek-V3")
+llm = ChatDeepSeek(
+    model="deepseek-chat",
+    temperature=0,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2,
+)
 
-# 创建Langchain的链
-chain = LLMChain(llm=llm, prompt=PromptTemplate.from_template("your_prompt_template"))
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是世界级的专家"),
+        ("human", "{input}")
+    ]
+)
 
-# 调用链
-result = chain.run("your_input")
-print(result)
+chain = prompt | llm
+
+res = chain.invoke({"input": "说出10个关于程序员的笑话"})
+
+print(res)
