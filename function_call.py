@@ -1,4 +1,3 @@
-
 import json
 import requests
 import os
@@ -7,12 +6,14 @@ from termcolor import colored
 
 GPT_MODEL = "gpt-3.5-turbo"
 
+
 # 使用了retry库，指定在请求失败时的重试策略。
 # 这里设定的是指数等待（wait_random_exponential），时间间隔的最大值为40秒，并且最多重试3次（stop_after_attempt(3)）。
 # 定义一个函数chat_completion_request，主要用于发送 聊天补全 请求到OpenAI服务器
 @retry(wait=wait_random_exponential(multiplier=1, max=40), stop=stop_after_attempt(3))
-def chat_completion_request(messages, functions=None, function_call=None, model=GPT_MODEL):
-
+def chat_completion_request(
+    messages, functions=None, function_call=None, model=GPT_MODEL
+):
     # 设定请求的header信息，包括 API_KEY
     headers = {
         "Content-Type": "application/json",
@@ -49,7 +50,6 @@ def chat_completion_request(messages, functions=None, function_call=None, model=
 
 # 定义一个函数pretty_print_conversation，用于打印消息对话内容
 def pretty_print_conversation(messages):
-
     # 为不同角色设置不同的颜色
     role_to_color = {
         "system": "red",
@@ -60,26 +60,46 @@ def pretty_print_conversation(messages):
 
     # 遍历消息列表
     for message in messages:
-
         # 如果消息的角色是"system"，则用红色打印“content”
         if message["role"] == "system":
-            print(colored(f"system: {message['content']}\n", role_to_color[message["role"]]))
+            print(
+                colored(
+                    f"system: {message['content']}\n", role_to_color[message["role"]]
+                )
+            )
 
         # 如果消息的角色是"user"，则用绿色打印“content”
         elif message["role"] == "user":
-            print(colored(f"user: {message['content']}\n", role_to_color[message["role"]]))
+            print(
+                colored(f"user: {message['content']}\n", role_to_color[message["role"]])
+            )
 
         # 如果消息的角色是"assistant"，并且消息中包含"function_call"，则用蓝色打印"function_call"
         elif message["role"] == "assistant" and message.get("function_call"):
-            print(colored(f"assistant[function_call]: {message['function_call']}\n", role_to_color[message["role"]]))
+            print(
+                colored(
+                    f"assistant[function_call]: {message['function_call']}\n",
+                    role_to_color[message["role"]],
+                )
+            )
 
         # 如果消息的角色是"assistant"，但是消息中不包含"function_call"，则用蓝色打印“content”
         elif message["role"] == "assistant" and not message.get("function_call"):
-            print(colored(f"assistant[content]: {message['content']}\n", role_to_color[message["role"]]))
+            print(
+                colored(
+                    f"assistant[content]: {message['content']}\n",
+                    role_to_color[message["role"]],
+                )
+            )
 
         # 如果消息的角色是"function"，则用品红色打印“function”
         elif message["role"] == "function":
-            print(colored(f"function ({message['name']}): {message['content']}\n", role_to_color[message["role"]]))
+            print(
+                colored(
+                    f"function ({message['name']}): {message['content']}\n",
+                    role_to_color[message["role"]],
+                )
+            )
 
 
 # 定义一个名为functions的列表，其中包含两个字典，这两个字典分别定义了两个功能的相关参数
@@ -124,9 +144,9 @@ functions = [
                 "num_days": {  # 预测天数参数
                     "type": "integer",  # 参数类型为整数
                     "description": "The number of days to forecast",  # 参数的描述
-                }
+                },
             },
-            "required": ["location", "format", "num_days"]  # 该功能需要的必要参数
+            "required": ["location", "format", "num_days"],  # 该功能需要的必要参数
         },
     },
 ]
@@ -136,21 +156,23 @@ functions = [
 messages = []
 
 # 使用append方法向messages列表添加一条系统角色的消息
-messages.append({
-    "role": "system",  # 消息的角色是"system"
-    "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."  # 消息的内容
-})
+messages.append(
+    {
+        "role": "system",  # 消息的角色是"system"
+        "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous.",  # 消息的内容
+    }
+)
 
 # 向messages列表添加一条用户角色的消息
-messages.append({
-    "role": "user",  # 消息的角色是"user"
-    "content": "What's the weather like today"  # 用户询问今天的天气情况
-})
+messages.append(
+    {
+        "role": "user",  # 消息的角色是"user"
+        "content": "What's the weather like today",  # 用户询问今天的天气情况
+    }
+)
 
 # 使用定义的chat_completion_request函数发起一个请求，传入messages和functions作为参数
-chat_response = chat_completion_request(
-    messages, functions=functions
-)
+chat_response = chat_completion_request(messages, functions=functions)
 
 # 解析返回的JSON数据，获取助手的回复消息
 assistant_message = chat_response.json()["choices"][0]["message"]
@@ -163,15 +185,15 @@ pretty_print_conversation(messages)
 type(assistant_message)
 
 # 向messages列表添加一条用户角色的消息，用户告知他们在苏格兰的格拉斯哥
-messages.append({
-    "role": "user",  # 消息的角色是"user"
-    "content": "I'm in Shanghai, China."  # 用户的消息内容
-})
+messages.append(
+    {
+        "role": "user",  # 消息的角色是"user"
+        "content": "I'm in Shanghai, China.",  # 用户的消息内容
+    }
+)
 
 # 再次使用定义的chat_completion_request函数发起一个请求，传入更新后的messages和functions作为参数
-chat_response = chat_completion_request(
-    messages, functions=functions
-)
+chat_response = chat_completion_request(messages, functions=functions)
 
 # 解析返回的JSON数据，获取助手的新的回复消息
 assistant_message = chat_response.json()["choices"][0]["message"]
@@ -185,21 +207,23 @@ pretty_print_conversation(messages)
 messages = []
 
 # 向messages列表添加一条系统角色的消息，要求不做关于函数参数值的假设，如果用户的请求模糊，应该寻求澄清
-messages.append({
-    "role": "system",  # 消息的角色是"system"
-    "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."
-})
+messages.append(
+    {
+        "role": "system",  # 消息的角色是"system"
+        "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous.",
+    }
+)
 
 # 向messages列表添加一条用户角色的消息，用户询问在未来x天内苏格兰格拉斯哥的天气情况
-messages.append({
-    "role": "user",  # 消息的角色是"user"
-    "content": "what is the weather going to be like in Shanghai, China over the next x days"
-})
+messages.append(
+    {
+        "role": "user",  # 消息的角色是"user"
+        "content": "what is the weather going to be like in Shanghai, China over the next x days",
+    }
+)
 
 # 使用定义的chat_completion_request函数发起一个请求，传入messages和functions作为参数
-chat_response = chat_completion_request(
-    messages, functions=functions
-)
+chat_response = chat_completion_request(messages, functions=functions)
 
 # 解析返回的JSON数据，获取助手的回复消息
 assistant_message = chat_response.json()["choices"][0]["message"]
@@ -211,15 +235,15 @@ messages.append(assistant_message)
 pretty_print_conversation(messages)
 
 # 向messages列表添加一条用户角色的消息，用户指定接下来的天数为5天
-messages.append({
-    "role": "user",  # 消息的角色是"user"
-    "content": "5 days"
-})
+messages.append(
+    {
+        "role": "user",  # 消息的角色是"user"
+        "content": "5 days",
+    }
+)
 
 # 使用定义的chat_completion_request函数发起一个请求，传入messages和functions作为参数
-chat_response = chat_completion_request(
-    messages, functions=functions
-)
+chat_response = chat_completion_request(messages, functions=functions)
 
 # 解析返回的JSON数据，获取第一个选项
 assistant_message = chat_response.json()["choices"][0]["message"]
@@ -234,16 +258,20 @@ pretty_print_conversation(messages)
 messages = []  # 创建一个空的消息列表
 
 # 添加系统角色的消息
-messages.append({
-    "role": "system",  # 角色为系统
-    "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."
-})
+messages.append(
+    {
+        "role": "system",  # 角色为系统
+        "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous.",
+    }
+)
 
 # 添加用户角色的消息
-messages.append({
-    "role": "user",  # 角色为用户
-    "content": "Give me a weather report for San Diego, USA."
-})
+messages.append(
+    {
+        "role": "user",  # 角色为用户
+        "content": "Give me a weather report for San Diego, USA.",
+    }
+)
 
 # 使用定义的chat_completion_request函数发起一个请求，传入messages、functions以及特定的function_call作为参数
 chat_response = chat_completion_request(
@@ -263,21 +291,23 @@ pretty_print_conversation(messages)
 messages = []  # 创建一个空的消息列表
 
 # 添加系统角色的消息
-messages.append({
-    "role": "system",  # 角色为系统
-    "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."
-})
+messages.append(
+    {
+        "role": "system",  # 角色为系统
+        "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous.",
+    }
+)
 
 # 添加用户角色的消息
-messages.append({
-    "role": "user",  # 角色为用户
-    "content": "Give me a weather report for San Diego, USA."
-})
+messages.append(
+    {
+        "role": "user",  # 角色为用户
+        "content": "Give me a weather report for San Diego, USA.",
+    }
+)
 
 # 使用定义的chat_completion_request函数发起一个请求，传入messages和functions作为参数
-chat_response = chat_completion_request(
-    messages, functions=functions
-)
+chat_response = chat_completion_request(messages, functions=functions)
 
 # 解析返回的JSON数据，获取第一个选项
 assistant_message = chat_response.json()["choices"][0]["message"]
@@ -292,16 +322,20 @@ pretty_print_conversation(messages)
 messages = []
 
 # 添加系统角色的消息
-messages.append({
-    "role": "system",  # 角色为系统
-    "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."
-})
+messages.append(
+    {
+        "role": "system",  # 角色为系统
+        "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous.",
+    }
+)
 
 # 添加用户角色的消息
-messages.append({
-    "role": "user",  # 角色为用户
-    "content": "Give me the current weather (use Celcius) for Toronto, Canada."
-})
+messages.append(
+    {
+        "role": "user",  # 角色为用户
+        "content": "Give me the current weather (use Celcius) for Toronto, Canada.",
+    }
+)
 
 # 使用定义的chat_completion_request函数发起一个请求，传入messages、functions和function_call作为参数
 chat_response = chat_completion_request(
@@ -324,6 +358,7 @@ import sqlite3
 
 conn = sqlite3.connect("data/chinook.db")
 print("Opened database successfully")
+
 
 def get_table_names(conn):
     """返回一个包含所有表名的列表"""
@@ -356,6 +391,7 @@ def get_database_info(conn):
         # 将表名和列名信息作为一个字典添加到列表中
         table_dicts.append({"table_name": table_name, "column_names": columns_names})
     return table_dicts  # 返回字典列表
+
 
 # 获取数据库信息，并存储为字典列表
 database_schema_dict = get_database_info(conn)
@@ -413,14 +449,23 @@ def execute_function_call(message):
         # 如果功能调用的名称不是 "ask_database"，则返回错误信息
         results = f"Error: function {message['function_call']['name']} does not exist"
     return results  # 返回结果
+
+
 # 创建一个空的消息列表
 messages = []
 
 # 向消息列表中添加一个系统角色的消息，内容是 "Answer user questions by generating SQL queries against the Chinook Music Database."
-messages.append({"role": "system", "content": "Answer user questions by generating SQL queries against the Chinook Music Database."})
+messages.append(
+    {
+        "role": "system",
+        "content": "Answer user questions by generating SQL queries against the Chinook Music Database.",
+    }
+)
 
 # 向消息列表中添加一个用户角色的消息，内容是 "Hi, who are the top 5 artists by number of tracks?"
-messages.append({"role": "user", "content": "Hi, who are the top 5 artists by number of tracks?"})
+messages.append(
+    {"role": "user", "content": "Hi, who are the top 5 artists by number of tracks?"}
+)
 
 # 使用 chat_completion_request 函数获取聊天响应
 chat_response = chat_completion_request(messages, functions)
@@ -436,14 +481,22 @@ if assistant_message.get("function_call"):
     # 使用 execute_function_call 函数执行功能调用，并获取结果
     results = execute_function_call(assistant_message)
     # 将功能的结果作为一个功能角色的消息添加到消息列表中
-    messages.append({"role": "function", "name": assistant_message["function_call"]["name"], "content": results})
+    messages.append(
+        {
+            "role": "function",
+            "name": assistant_message["function_call"]["name"],
+            "content": results,
+        }
+    )
 
 # 使用 pretty_print_conversation 函数打印对话
 pretty_print_conversation(messages)
 
 
 # 向消息列表中添加一个用户的问题，内容是 "What is the name of the album with the most tracks?"
-messages.append({"role": "user", "content": "What is the name of the album with the most tracks?"})
+messages.append(
+    {"role": "user", "content": "What is the name of the album with the most tracks?"}
+)
 
 # 使用 chat_completion_request 函数获取聊天响应
 chat_response = chat_completion_request(messages, functions)
@@ -459,8 +512,13 @@ if assistant_message.get("function_call"):
     # 使用 execute_function_call 函数执行功能调用，并获取结果
     results = execute_function_call(assistant_message)
     # 将功能的结果作为一个功能角色的消息添加到消息列表中
-    messages.append({"role": "function", "content": results, "name": assistant_message["function_call"]["name"]})
+    messages.append(
+        {
+            "role": "function",
+            "content": results,
+            "name": assistant_message["function_call"]["name"],
+        }
+    )
 
 # 使用 pretty_print_conversation 函数打印对话
 pretty_print_conversation(messages)
-

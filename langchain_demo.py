@@ -6,7 +6,11 @@ from langchain_deepseek.chat_models import ChatDeepSeek
 from langchain_openai.embeddings import OpenAIEmbeddings
 
 # 聊天场景的提示次模版
-from langchain_core.prompts import ChatPromptTemplate, PromptTemplate, FewShotPromptTemplate
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    PromptTemplate,
+    FewShotPromptTemplate,
+)
 from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
 
 from dotenv import load_dotenv
@@ -30,7 +34,11 @@ examples = [
     }
 ]
 
-example_template = PromptTemplate(input_variables=['question'], output_variables=['answer'], template="问题：{question}\\n{answer}")
+example_template = PromptTemplate(
+    input_variables=["question"],
+    output_variables=["answer"],
+    template="问题：{question}\\n{answer}",
+)
 
 # embedding
 # 利用 寓意相似度 做匹配
@@ -47,17 +55,14 @@ few_shot_prompt = FewShotPromptTemplate(
     examples=examples,
     example_prompt=example_template,
     suffix="问题: {input}",
-    input_variables=["input"]
+    input_variables=["input"],
 )
 
 print(few_shot_prompt.format(input="你是谁"))
 
 # template
 prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", "你是世界级的专家"),
-        ("human", "{input}")
-    ]
+    [("system", "你是世界级的专家"), ("human", "{input}")]
 )
 
 output_parser = StrOutputParser()

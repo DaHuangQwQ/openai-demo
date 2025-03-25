@@ -1,6 +1,7 @@
 # 导入 pandas 包。Pandas 是一个用于数据处理和分析的 Python 库
 # 提供了 DataFrame 数据结构，方便进行数据的读取、处理、分析等操作。
 import pandas as pd
+
 # 导入 tiktoken 库。Tiktoken 是 OpenAI 开发的一个库，用于从模型生成的文本中计算 token 数量。
 import tiktoken
 
@@ -11,7 +12,7 @@ df = df.dropna()
 
 # 将 "Summary" 和 "Text" 字段组合成新的字段 "combined"
 df["combined"] = (
-        "Title: " + df.Summary.str.strip() + "; Content: " + df.Text.str.strip()
+    "Title: " + df.Summary.str.strip() + "; Content: " + df.Text.str.strip()
 )
 
 # 模型类型
@@ -101,6 +102,7 @@ df_embedded.head(2)
 # 导入 NumPy 包，NumPy 是 Python 的一个开源数值计算扩展。这种工具可用来存储和处理大型矩阵，
 # 比 Python 自身的嵌套列表（nested list structure)结构要高效的多。
 import numpy as np
+
 # 从 matplotlib 包中导入 pyplot 子库，并将其别名设置为 plt。
 # matplotlib 是一个 Python 的 2D 绘图库，pyplot 是其子库，提供了一种类似 MATLAB 的绘图框架。
 import matplotlib.pyplot as plt
@@ -115,10 +117,10 @@ from sklearn.manifold import TSNE
 type(df_embedded["embedding_vec"])
 
 # 首先，确保你的嵌入向量都是等长的
-assert df_embedded['embedding_vec'].apply(len).nunique() == 1
+assert df_embedded["embedding_vec"].apply(len).nunique() == 1
 
 # 将嵌入向量列表转换为二维 numpy 数组
-matrix = np.vstack(df_embedded['embedding_vec'].values)
+matrix = np.vstack(df_embedded["embedding_vec"].values)
 
 # 创建一个 t-SNE 模型，t-SNE 是一种非线性降维方法，常用于高维数据的可视化。
 # n_components 表示降维后的维度（在这里是2D）
@@ -126,7 +128,9 @@ matrix = np.vstack(df_embedded['embedding_vec'].values)
 # random_state 是随机数生成器的种子
 # init 设置初始化方式
 # learning_rate 是学习率。
-tsne = TSNE(n_components=2, perplexity=15, random_state=42, init='random', learning_rate=200)
+tsne = TSNE(
+    n_components=2, perplexity=15, random_state=42, init="random", learning_rate=200
+)
 
 # 使用 t-SNE 对数据进行降维，得到每个数据点在新的2D空间中的坐标
 vis_dims = tsne.fit_transform(matrix)
@@ -157,6 +161,7 @@ plt.title("Amazon ratings visualized in language using t-SNE")
 ## 4. 使用 K-Means 聚类，然后使用 t-SNE 可视化
 
 import numpy as np
+
 # 从 scikit-learn中导入 KMeans 类。KMeans 是一个实现 K-Means 聚类算法的类。
 from sklearn.cluster import KMeans
 
@@ -172,16 +177,16 @@ n_clusters = 4
 # init 参数指定了初始化方法（在这种情况下是 'k-means++'）；
 # random_state 参数为随机数生成器设定了种子值，用于生成初始聚类中心。
 # n_init=10 消除警告 'FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4'
-kmeans = KMeans(n_clusters=n_clusters, init='k-means++', random_state=42, n_init=10)
+kmeans = KMeans(n_clusters=n_clusters, init="k-means++", random_state=42, n_init=10)
 
 # 使用 matrix（我们之前创建的矩阵）来训练 KMeans 模型。这将执行 K-Means 聚类算法。
 kmeans.fit(matrix)
 
 # kmeans.labels_ 属性包含每个输入数据点所属的聚类的索引。
 # 这里，我们创建一个新的 'Cluster' 列，在这个列中，每个数据点都被赋予其所属的聚类的标签。
-df_embedded['Cluster'] = kmeans.labels_
+df_embedded["Cluster"] = kmeans.labels_
 
-df_embedded['Cluster']
+df_embedded["Cluster"]
 
 df_embedded.head(2)
 
@@ -197,7 +202,7 @@ x = vis_data[:, 0]
 y = vis_data[:, 1]
 
 # 'Cluster' 列中的值将被用作颜色索引。
-color_indices = df_embedded['Cluster'].values
+color_indices = df_embedded["Cluster"].values
 
 # 创建一个基于预定义颜色的颜色映射对象
 colormap = matplotlib.colors.ListedColormap(colors)
@@ -215,14 +220,13 @@ plt.show()
 
 ## 5. 使用 Embedding 进行文本搜索
 
+
 # cosine_similarity 函数计算两个嵌入向量之间的余弦相似度。
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
-
 type(df_embedded["embedding_vec"][0])
-
 
 
 # 定义一个名为 search_reviews 的函数，
@@ -230,7 +234,9 @@ type(df_embedded["embedding_vec"][0])
 def search_reviews(df, product_description, n=3, pprint=True):
     product_embedding = embedding_text(product_description)
 
-    df["similarity"] = df.embedding_vec.apply(lambda x: cosine_similarity(x, product_embedding))
+    df["similarity"] = df.embedding_vec.apply(
+        lambda x: cosine_similarity(x, product_embedding)
+    )
 
     results = (
         df.sort_values("similarity", ascending=False)
@@ -243,24 +249,24 @@ def search_reviews(df, product_description, n=3, pprint=True):
             print(r[:200])
             print()
     return results
-
 
 
 # 使用 'delicious beans' 作为产品描述和 3 作为数量，
 # 调用 search_reviews 函数来查找与给定产品描述最相似的前3条评论。
 # 其结果被存储在 res 变量中。
-res = search_reviews(df_embedded, 'delicious beans', n=3)
+res = search_reviews(df_embedded, "delicious beans", n=3)
 
-res = search_reviews(df_embedded, 'dog food', n=3)
+res = search_reviews(df_embedded, "dog food", n=3)
 
-res = search_reviews(df_embedded, 'awful', n=5)
-
+res = search_reviews(df_embedded, "awful", n=5)
 
 
 def search_reviews(df, product_description, n=3, pprint=True):
     product_embedding = embedding_text(product_description)
 
-    df["similarity"] = df.embedding_vec.apply(lambda x: cosine_similarity(x, product_embedding))
+    df["similarity"] = df.embedding_vec.apply(
+        lambda x: cosine_similarity(x, product_embedding)
+    )
 
     results = (
         df.sort_values("similarity", ascending=False)
@@ -275,5 +281,4 @@ def search_reviews(df, product_description, n=3, pprint=True):
     return results
 
 
-res = search_reviews(df_embedded, 'dog food', n=3)
-
+res = search_reviews(df_embedded, "dog food", n=3)

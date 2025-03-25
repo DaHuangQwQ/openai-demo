@@ -14,7 +14,7 @@ prompt = ChatPromptTemplate.from_messages(
         ("system", "你是一个{master}专家，请你用100字左右回答"),
         # 历史消息占位符
         MessagesPlaceholder(variable_name="history"),
-        ("human", "{input}")
+        ("human", "{input}"),
     ]
 )
 
@@ -54,7 +54,7 @@ withMessageHistory = RunnableWithMessageHistory(
             name="User ID",
             description="用户唯一id",
             default="",
-            is_shared=True
+            is_shared=True,
         ),
         ConfigurableFieldSpec(
             id="conversation_id",
@@ -62,14 +62,14 @@ withMessageHistory = RunnableWithMessageHistory(
             name="Conversation ID",
             description="对话唯一id",
             default="",
-            is_shared=True
-        )
-    ]
+            is_shared=True,
+        ),
+    ],
 )
 
 res = withMessageHistory.invoke(
     {"master": "软件工程", "input": "langchain 是什么"},
-    config={"configurable":{"user_id": "1", "conversation_id": "abc123"}}
+    config={"configurable": {"user_id": "1", "conversation_id": "abc123"}},
 )
 
 print(res)

@@ -8,9 +8,7 @@ msg = HumanMessage(
         {"type": "text", "text": "请你描述一下图中的女子"},
         {
             "type": "image_url",
-            "image_url": {
-                "url": f"data:image/jpeg;base64,{image_data}"
-            }
+            "image_url": {"url": f"data:image/jpeg;base64,{image_data}"},
         },
     ]
 )

@@ -1,5 +1,6 @@
 from langchain_core.tools import tool
 
+
 @tool
 def mul(a: int, b: int):
     """

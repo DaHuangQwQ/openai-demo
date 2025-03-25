@@ -16,4 +16,4 @@ chunks = []
 
 for chunk in llm.stream("天空是什么颜色"):
     chunks.append(chunk)
-    print(chunk.content, end='|', flush=True)
+    print(chunk.content, end="|", flush=True)

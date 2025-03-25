@@ -28,7 +28,7 @@ chunks = []
 async def async_stream_llm():
     async for chunk in chain.astream({"input": "天空是什么颜色"}):
         chunks.append(chunk)
-        print(chunk, end='|', flush=True)
+        print(chunk, end="|", flush=True)
 
 
 asyncio.run(async_stream_llm())
