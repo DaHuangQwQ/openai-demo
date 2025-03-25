@@ -16,7 +16,7 @@ parser = JsonOutputParser(pydantic_object=Joke)
 
 prompt = PromptTemplate(
     template="回答用户的查询. \n{setup}\n{res}\n",
-    input_variables="res",
+    input_variables=["res"],
     partial_variables={"setup": parser.get_format_instructions()},
 )
 
