@@ -1,8 +1,9 @@
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.tools import create_retriever_tool
-from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+from langchainDemo.utils import openai_embedding
 
 loader = WebBaseLoader("https://zh.wikipedia.org/wiki/%E7%8C%AB")
 
@@ -14,7 +15,7 @@ documents = RecursiveCharacterTextSplitter(
     chunk_overlap=200,
 ).split_documents(docs)
 
-vector = FAISS.from_documents(documents, OpenAIEmbeddings())
+vector = FAISS.from_documents(documents, openai_embedding)
 
 retriever = vector.as_retriever()
 
