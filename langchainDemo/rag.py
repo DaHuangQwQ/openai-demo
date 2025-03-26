@@ -10,10 +10,9 @@ from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import create_retriever_tool
-from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from langchain_demo import llm
+from utils import openai_llm, openai_embedding
 
 st.set_page_config(
     page_title="文档问答",
@@ -51,9 +50,8 @@ def configure_retriever(uploaded_files):
         chunk_overlap=200,
     ).split_documents(docs)
 
-    embeddings = OpenAIEmbeddings()
     # 向量数据库
-    vector_db = Chroma.from_documents(tests_split, embeddings)
+    vector_db = Chroma.from_documents(tests_split, openai_embedding)
 
     return vector_db.as_retriever()
 
@@ -129,7 +127,7 @@ New input: {input}
 
 base_prompt = PromptTemplate.from_template(base_prompt_template)
 
-agent = create_react_agent(llm, tools, base_prompt)
+agent = create_react_agent(openai_llm, tools, base_prompt)  # noqa: F821
 
 agent_executor = AgentExecutor(
     agent=agent,
