@@ -1,4 +1,4 @@
-from utils import llm, img_to_base64
+from utils import img_to_base64, openai_llm
 from langchain_core.messages import HumanMessage
 
 image_data = img_to_base64("./_image.jpg")
@@ -13,6 +13,6 @@ msg = HumanMessage(
     ]
 )
 
-res = llm.invoke([msg])
+res = openai_llm.invoke([msg])
 
 print(res.content)
