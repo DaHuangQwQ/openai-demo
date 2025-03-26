@@ -1,6 +1,7 @@
 import base64
 
 from langchain_deepseek import ChatDeepSeek
+from langchain_openai import ChatOpenAI
 
 from dotenv import load_dotenv
 
@@ -14,6 +15,8 @@ llm = ChatDeepSeek(
     timeout=None,
     max_retries=2,
 )
+
+openai_llm = ChatOpenAI(base_url="https://xiaoai.plus/v1", model="gpt-4o-mini")
 
 
 def img_to_base64(image_path):
