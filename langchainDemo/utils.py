@@ -16,7 +16,9 @@ llm = ChatDeepSeek(
     max_retries=2,
 )
 
-openai_llm = ChatOpenAI(base_url="https://xiaoai.plus/v1", model="gpt-4o-mini")
+openai_llm = ChatOpenAI(
+    base_url="https://xiaoai.plus/v1", model="gpt-4o-mini", temperature=0
+)
 
 openai_embedding = OpenAIEmbeddings()
 
