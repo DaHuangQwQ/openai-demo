@@ -12,4 +12,4 @@ agent = create_tool_calling_agent(llm, tools, prompt)
 
 agent_exec = AgentExecutor(agent=agent, tools=tools)
 
-res = agent_exec.invoke({"input": "猫的特征？"})
+res = agent_exec.invoke({"input": "猫的特征？", "chat_history": []})
